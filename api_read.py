@@ -2,6 +2,7 @@ import requests
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
+import pdb
 
 
 class ApiReader:
@@ -32,6 +33,7 @@ class ApiReader:
                     if games_for_month.status_code != 404:
                         all_games += games_for_month.text
             year -= 1
+
         return all_games
 
     def parse_games(self):
@@ -61,12 +63,26 @@ class ApiReader:
                             individual_results[2] += 1
                     if 'ECOUrl' in component:
                         game_type = component.split('/')[-1].split('\\')[0][4:]
-                        if game_type not in openings:
-                            openings[game_type] = individual_results
+                        split_up = game_type.split('-')
+                        game_type_abbrv = "Other"
+                        try:
+                            game_type_abbrv = ' '.join(split_up[0:split_up.index('Attack')])
+                        except ValueError:
+                            pass
+                        try:
+                            game_type_abbrv = ' '.join(split_up[0:split_up.index('Opening')])
+                        except ValueError:
+                            pass
+                        try:
+                            game_type_abbrv = ' '.join(split_up[0:split_up.index('Defense')])
+                        except ValueError:
+                            pass
+                        if game_type_abbrv not in openings:
+                            openings[game_type_abbrv] = individual_results
                         else:
-                            openings[game_type][0] += individual_results[0]
-                            openings[game_type][1] += individual_results[1]
-                            openings[game_type][2] += individual_results[2]
+                            openings[game_type_abbrv][0] += individual_results[0]
+                            openings[game_type_abbrv][1] += individual_results[1]
+                            openings[game_type_abbrv][2] += individual_results[2]
 
         return openings
 
@@ -79,9 +95,9 @@ class Visualizer:
     def create_plot(self):
         df = pd.DataFrame(self.game_results)
 
-        wins = [df[k][0]/(df[k][0]+df[k][1]+df[k][2])*100 for k in self.game_results.keys()]
-        losses = [df[k][1]/(df[k][0]+df[k][1]+df[k][2])*100 for k in self.game_results.keys()]
-        draws = [df[k][2]/(df[k][0]+df[k][1]+df[k][2])*100 for k in self.game_results.keys()]
+        wins = [df[k][0] for k in self.game_results.keys()]
+        losses = [df[k][1] for k in self.game_results.keys()]
+        draws = [df[k][2] for k in self.game_results.keys()]
         ind = [i for i in range(len(self.game_results.keys()))]
         width = 0.6 # the width of the bars: can also be len(x) sequence
 
@@ -89,20 +105,19 @@ class Visualizer:
         p2 = plt.bar(ind, losses, width, color='b')
         p3 = plt.bar(ind, draws, width, color = 'g')
 
-        plt.ylabel('Scores')
-        plt.title('Scores by group and gender')
+        plt.ylabel('Games Played')
+        plt.title('Game Results Amongst Openings Played')
         plt.xticks(ind, self.game_results.keys())
         plt.legend((p1[0], p2[0], p3[0]), ('Wins', 'Losses', 'Draws'))
-
+        plt.xticks(rotation=45)
         plt.show()
 
 
-api = ApiReader('GetSchwifty10', 2)
+api = ApiReader('magnuscarlsen', 3)
 results = api.parse_games()
 
 Visualizer(results).create_plot()
 
-# TODO - 'squish' game type names (all variations can(/should?) just be shortened to the main line version)
-    # ^ will get better spread data
 # TODO - create main() with arg parser for user name and number of years
-# TODO - tilt game type names to be readable on x-axis (to after step 1)
+# TODO - flask app
+# TODO - Port to GCP
