@@ -80,6 +80,5 @@ class ApiReader:
                             openings[game_type_abbrv][0] += individual_results[0]
                             openings[game_type_abbrv][1] += individual_results[1]
                             openings[game_type_abbrv][2] += individual_results[2]
-
         return openings
 
