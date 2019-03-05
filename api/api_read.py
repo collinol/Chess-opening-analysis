@@ -9,6 +9,7 @@ class ApiReader:
         self.past_years = years
 
     def get_games(self):
+        # todo - check for existing file and write instead of api callling on user already analyzed
         current_day = datetime.datetime.now()
         year = current_day.year
         month = current_day.month
