@@ -34,11 +34,12 @@ class Visualizer:
         #self._break_up_xlabels(games)
         fig, axs = plt.subplots(nrows=1, ncols=1)
         data = axs
-        p1 = data.bar(ind, losses, width, color='g')
-        p2 = data.bar(ind, wins, width, color='r')
-        p3 = data.bar(ind, draws, width, color='b')
         import pdb
-        pdb.set_trace()
+        #pdb.set_trace()
+        p1 = data.bar(ind, [i+j+k for i,j,k in zip(losses,wins,draws)], width, color='g')
+        p2 = data.bar(ind, [i+j for i,j in zip(losses,draws)], width, color='r')
+        p3 = data.bar(ind, draws, width, color='b')
+        #pdb.set_trace()
         data.set_ylabel('Games Played')
         #data.title('Game Results Amongst Openings Played')
         data.set_xticks(ind)
