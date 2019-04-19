@@ -52,7 +52,7 @@ class Visualizer:
         p2 = data.bar(ind, [i + j for i, j in zip(losses, draws)], width, color='r')
         p3 = data.bar(ind, draws, width, color='b')
         import pdb
-        #pdb.set_trace()
+        pdb.set_trace()
         data.set_ylabel('Games Played')
 
         data.set_xticks(ind)
@@ -63,6 +63,6 @@ class Visualizer:
             label.set_visible(False)
         for rect, label in zip(rects, [item[0] for item in sorted_sums]):
             height = rect.get_height()
-            data.text(rect.get_x() + rect.get_width() / 2, height + 5, label, ha='center', va='bottom', rotation=90)
+            data.text(rect.get_x() + rect.get_width() / 2, height, label, ha='center', va='bottom', rotation=90)
         plt.title("Game Results Amongst Openings Played")
         plt.show()
