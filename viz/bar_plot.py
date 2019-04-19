@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -21,9 +23,16 @@ class Visualizer:
                     cleaner_string = ""
         return cleaner_list
 
-    def create_plot(self):
+    def create_plot(self, user, write_to_db=False):
         df = pd.DataFrame(self.game_results)
         df = df.sort_values(by=0, axis=1, ascending=False)
+        if write_to_db:
+            df.to_csv('Data/{}_{}.tsv'.format(user,str(datetime.datetime.utcnow()).replace(' ','-')), sep='\t')
+            #TODO ^ should write to DB
+            '''
+            columns: user-name (key) | time-updated | opening1 | opening2 | ... | opening n
+            '''
+
         games = self.game_results.keys()
         sorted_by_sum = {}
         for k in games:
@@ -42,7 +51,8 @@ class Visualizer:
         p1 = data.bar(ind, [i + j + k for i, j, k in zip(losses, wins, draws)], width, color='g')
         p2 = data.bar(ind, [i + j for i, j in zip(losses, draws)], width, color='r')
         p3 = data.bar(ind, draws, width, color='b')
-
+        import pdb
+        #pdb.set_trace()
         data.set_ylabel('Games Played')
 
         data.set_xticks(ind)
