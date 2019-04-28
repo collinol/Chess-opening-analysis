@@ -7,4 +7,4 @@
 `pip3 install pipenv`  
 `pipenv install -r requirements/requirements.txt`  
 `pipenv shell`  
-`python main.py --user-name=CHESS.COM_USER_NAME --years=YEARS_OF_HISTORY_TO_VIEW `  
+`python main.py --user-name=CHESS.COM_USER_NAME`
