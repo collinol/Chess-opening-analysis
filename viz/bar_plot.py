@@ -64,7 +64,4 @@ class Visualizer:
             height = rect.get_height()
             data.text(rect.get_x() + rect.get_width() / 2, height, label, ha='center', va='bottom', rotation=90)
         plt.title("Game Results Amongst Openings Played")
-        #plt.show()
-        import pdb
-        #pdb.set_trace()
         return fig

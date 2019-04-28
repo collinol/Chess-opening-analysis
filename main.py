@@ -55,8 +55,6 @@ if __name__ == '__main__':
     def plot_png():
         fig = create_figure()
         output = io.BytesIO()
-        import pdb
-        pdb.set_trace()
         FigureCanvas(fig).print_png(output)
 
         return Response(output.getvalue(), mimetype='image/png')
