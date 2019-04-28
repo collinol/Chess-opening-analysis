@@ -3,7 +3,11 @@ import datetime
 import os
 from api.api_read import ApiReader
 from viz.bar_plot import Visualizer
-
+import io
+import random
+from flask import Flask, Response, render_template
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 def _create_from_api():
     api = ApiReader(args.user_name, 3)
@@ -17,7 +21,8 @@ def _create_from_api():
     
     '''
     # thread2 => write to db
-    Visualizer(results).create_plot(args.user_name, write_to_db=True)
+    VizClass = Visualizer(results)
+    return VizClass.create_plot(args.user_name, write_to_db=True)
 
 
 def _pull_from_db():
@@ -37,17 +42,33 @@ if __name__ == '__main__':
     #parser.add_argument('--years', type=int, help='how many years back do you want to collect data for')
 
     args = parser.parse_args()
-    # TODO
-    '''
-    connect to db
-    look up by args.user_name
-    if user_name found in db.users.name:
-        created = db.users.time-created
-        time_since_created = datetime.datetime.utcnow() - datetime.datetime.strptime(str(created), "%Y-%m-%d-%H:%M:%S.%f")
-        if time_since_created.total_seconds() > 86400: #24 hour
-            _create_from_api()
-        else:
-            _pull_from_db()
-    else:
-        create_from_api()
-    '''
+
+    app = Flask(__name__)
+
+
+    @app.route('/')
+    def main():
+        return render_template('index.html')
+
+
+    @app.route('/analysis')
+    def plot_png():
+        fig = create_figure()
+        output = io.BytesIO()
+        import pdb
+        pdb.set_trace()
+        FigureCanvas(fig).print_png(output)
+
+        return Response(output.getvalue(), mimetype='image/png')
+
+
+    def create_figure():
+
+        return _create_from_api()
+
+    app.run()
+
+
+
+
+

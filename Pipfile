@@ -10,6 +10,7 @@ requests = "*"
 pandas = "*"
 matplotlib = "*"
 DateTime = "*"
-
+Flask = "*"
+bokeh ="*"
 [requires]
 python_version = "3.6"
