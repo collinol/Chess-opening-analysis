@@ -1,10 +1,8 @@
 import datetime
 
 import pandas as pd
-import matplotlib.pyplot as plt
-from plotly.offline import plot
-import plotly.plotly as py
 import plotly.graph_objs as go
+
 
 class Visualizer:
 

@@ -7,14 +7,13 @@ import io
 import random
 import base64
 from flask import Flask, Response, render_template, flash, redirect, request, url_for
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
 from plotly.offline import plot
 from plotly.graph_objs import Scatter
 from flask import Markup
 
 
 app = Flask(__name__)
+
 
 def _create_from_api(username):
     api = ApiReader(username, 3)
@@ -32,9 +31,6 @@ def _create_from_api(username):
     return VizClass.create_plot(username, write_to_db=True)
 
 
-
-
-
 @app.route('/')
 def main():
     return render_template('homepage.html')
@@ -45,12 +41,11 @@ def result():
     error = None
     if request.method == 'POST':
         username = request.form.get('comp_select')
-        fig = _create_from_api(username)
+        _create_from_api(username)
         return render_template('result.html')
     # If user tries to get to page directly, redirect to submission page
     elif request.method == "GET":
         return redirect(url_for('submission', error=error))
-
 
 
 if __name__=='__main__':
