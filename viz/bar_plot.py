@@ -2,7 +2,9 @@ import datetime
 
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from plotly.offline import plot
+import plotly.plotly as py
+import plotly.graph_objs as go
 
 class Visualizer:
 
@@ -38,30 +40,33 @@ class Visualizer:
         for k in games:
             sorted_by_sum[k] = sum(df[k])
         sorted_sums = sorted(sorted_by_sum.items(), key=lambda x: x[1], reverse=True)
-
         wins = [df[k[0]][0] for k in sorted_sums]
         losses = [df[k[0]][1] for k in sorted_sums]
         draws = [df[k[0]][2] for k in sorted_sums]
         ind = [i for i in range(len(games))]
         width = 0.6  # the width of the bars: can also be len(x) sequence
+        trace1 = go.Bar(
+            x=[k[0] for k in sorted_sums],
+            y=wins,
+            name='Wins'
+        )
+        trace2 = go.Bar(
+            x=[k[0] for k in sorted_sums],
+            y=losses,
+            name='Losses'
+        )
 
-        fig, axs = plt.subplots(nrows=1, ncols=1)
-        data = axs
+        trace3 = go.Bar(
+            x=[k[0] for k in sorted_sums],
+            y=draws,
+            name='Draws'
+        )
 
-        p1 = data.bar(ind, [i + j + k for i, j, k in zip(losses, wins, draws)], width, color='g')
-        p2 = data.bar(ind, [i + j for i, j in zip(losses, draws)], width, color='r')
-        p3 = data.bar(ind, draws, width, color='b')
+        data = [trace1, trace2, trace3]
+        layout = go.Layout(
+            barmode='stack',
+            title=user+" Game Results"
+        )
 
-        data.set_ylabel('Games Played')
-
-        data.set_xticks(ind)
-        data.legend((p1[0], p2[0], p3[0]), ('Wins', 'Losses', 'Draws'))
-        rects = data.patches
-
-        for label in data.xaxis.get_ticklabels()[::2]:
-            label.set_visible(False)
-        for rect, label in zip(rects, [item[0] for item in sorted_sums]):
-            height = rect.get_height()
-            data.text(rect.get_x() + rect.get_width() / 2, height, label, ha='center', va='bottom', rotation=90)
-        plt.title("Game Results Amongst Openings Played")
-        return fig
+        fig = go.Figure(data=data, layout=layout)
+        return fig.write_html('templates/result.html')

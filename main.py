@@ -5,12 +5,19 @@ from api.api_read import ApiReader
 from viz.bar_plot import Visualizer
 import io
 import random
-from flask import Flask, Response, render_template
+import base64
+from flask import Flask, Response, render_template, flash, redirect, request, url_for
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+from plotly.offline import plot
+from plotly.graph_objs import Scatter
+from flask import Markup
 
-def _create_from_api():
-    api = ApiReader(args.user_name, 3)
+
+app = Flask(__name__)
+
+def _create_from_api(username):
+    api = ApiReader(username, 3)
     results = api.parse_games()
     # thread1 => create visual (move dataframe creation out)
     '''
@@ -22,51 +29,30 @@ def _create_from_api():
     '''
     # thread2 => write to db
     VizClass = Visualizer(results)
-    return VizClass.create_plot(args.user_name, write_to_db=True)
-
-
-def _pull_from_db():
-    # TODO
-    '''
-    connect to db.user via name (key)
-    get json from db.user.game_data
-    results = json -> dataframe
-    Visualizer(results).create_plot(args.user_name)
-       ^^^ after ripping out df creation logic, Visualizer shouldn't be initliazed with a dictionary data
-
-    '''
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Visualize Chess Opening Stats')
-    parser.add_argument('--user-name', type=str, help='chess.com username to get stats for')
-    #parser.add_argument('--years', type=int, help='how many years back do you want to collect data for')
-
-    args = parser.parse_args()
-
-    app = Flask(__name__)
-
-
-    @app.route('/')
-    def main():
-        return render_template('index.html')
-
-
-    @app.route('/analysis')
-    def plot_png():
-        fig = create_figure()
-        output = io.BytesIO()
-        FigureCanvas(fig).print_png(output)
-
-        return Response(output.getvalue(), mimetype='image/png')
-
-
-    def create_figure():
-
-        return _create_from_api()
-
-    app.run()
+    return VizClass.create_plot(username, write_to_db=True)
 
 
 
 
 
+@app.route('/')
+def main():
+    return render_template('homepage.html')
+
+
+@app.route('/result', methods=['GET', 'POST'])
+def result():
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('comp_select')
+        fig = _create_from_api(username)
+        return render_template('result.html')
+    # If user tries to get to page directly, redirect to submission page
+    elif request.method == "GET":
+        return redirect(url_for('submission', error=error))
+
+
+
+if __name__=='__main__':
+    app.run(debug=True)
+    #_create_from_api('GetSchwifty10')
