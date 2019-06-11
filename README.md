@@ -7,4 +7,5 @@
 `pip3 install pipenv`  
 `pipenv install -r requirements/requirements.txt`  
 `pipenv shell`  
-`python main.py --user-name=CHESS.COM_USER_NAME`
+`python main.py`
+go to localhost url provided in terminal.
