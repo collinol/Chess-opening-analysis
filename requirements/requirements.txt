@@ -3,3 +3,5 @@ datetime
 pandas
 matplotlib
 argparse
+plotly
+flask
