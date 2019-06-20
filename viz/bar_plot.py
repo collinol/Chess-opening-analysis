@@ -6,8 +6,9 @@ import plotly.graph_objs as go
 
 class Visualizer:
 
-    def __init__(self, game_results):
+    def __init__(self, game_results, data):
         self.game_results = game_results
+        self.current_data = data
 
     @staticmethod
     def _break_up_xlabels(string_list):
@@ -23,15 +24,9 @@ class Visualizer:
                     cleaner_string = ""
         return cleaner_list
 
-    def create_plot(self, user, write_to_db=False):
+    def create_plot(self, user):
         df = pd.DataFrame(self.game_results)
         df = df.sort_values(by=0, axis=1, ascending=False)
-        #if write_to_db:
-         #   df.to_csv('Data/{}_{}.tsv'.format(user,str(datetime.datetime.utcnow()).replace(' ','-')), sep='\t')
-            #TODO ^ should write to DB
-            #'''
-            #columns: user-name (key) | time-updated | opening1 | opening2 | ... | opening n
-            #'''
 
         games = self.game_results.keys()
         sorted_by_sum = {}
@@ -67,4 +62,6 @@ class Visualizer:
         )
 
         fig = go.Figure(data=data, layout=layout)
-        return fig.write_html('templates/result.html')
+        new_time = str(datetime.datetime.now()).replace(" ", "-")
+        # todo - add() to tree
+        return fig.write_html('templates/{}_{}.html'.format(user, new_time))
