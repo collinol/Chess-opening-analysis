@@ -6,6 +6,6 @@
 `cd Chess-opening-analysis`  
 `virtualenv Chess-opening-analysis`  
 `source Chess-opening-analysis/bin/activate`  
-`pip install -r requirements.txt`  
+`pip install --upgrade -r requirements.txt`  
 `python application.py`  
 go to localhost url provided in terminal.
