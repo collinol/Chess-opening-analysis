@@ -26,7 +26,7 @@ def _create_from_api(username, datatree):
 
 @app.route('/')
 def main():
-    return render_template('homepage.html')
+    return render_template('index.html')
 
 
 @app.route('/result', methods=['GET', 'POST'])
@@ -41,26 +41,26 @@ def result():
             if data_exists:
                 file_to_erase = lookup["user"]
                 print("erasing",lookup["user"])
-                # Todo add remove() method to tree
+                datatree.remove(file_to_erase)
                 os.system("rm templates/"+file_to_erase)
             api = ApiReader(username, 3) # TODO make years input-able
             results = api.parse_games()
             VizClass = Visualizer(results, datatree)
-            VizClass.create_plot(username)
-            print("should serve new",lookup["user"])
-            return render_template("templates/"+lookup["user"])
+            new_file = VizClass.create_plot(username, datatree)
+            return new_file
+
 
         if not lookup:
-            writer(data_exists=False) # case where there's no data
+            return render_template(writer(data_exists=False)) # case where there's no data
         else:
-            if lookup["last_updated"] < datetime.datetime.now():
+            past = datetime.datetime.now() - datetime.timedelta(days=3)
+            if past > lookup["last_updated"]: # obviously change the .now() after debugging
                 print("need to replace old data")
-                writer(data_exists=True)
+                return render_template(writer(data_exists=True))
             else:
                 print("recent data for this user exists, returned:", lookup["user"])
-                return render_template("templates/"+lookup["user"])
+                return render_template(lookup["user"])
 
-        return render_template(datatree.lookup(username))
     # If user tries to get to page directly, redirect to submission page
     elif request.method == "GET":
         return redirect(url_for('submission', error=error))
